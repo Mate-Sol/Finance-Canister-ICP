@@ -27,7 +27,7 @@ actor FinanceCanister {
     ApprovedAmount : Text;
     DisbursedAmount : Text;
     RepaymentAmount : Text;
-    CreationDate : Int;
+    CreationDate : Text;
     Action : Text;
     BankForFinancing : Text;
     RequestBy : Text;
@@ -81,7 +81,7 @@ actor FinanceCanister {
     userid : Text,
     financetype : Text,
     requestedby : Text,
-    creationdate : Int,
+    creationdate : Text,
     action : Text,
     requestedduration : Text,
     bankforfinance : Text,
@@ -91,6 +91,7 @@ actor FinanceCanister {
     processingfee : Text,
     creditlimit : Text,
     amount : Text,
+    currency:Text,
     txnHash : Text,
   ) : async Text {
     switch (map.get(financeid)) {
@@ -130,7 +131,7 @@ actor FinanceCanister {
           Default = false;
           DefaultRemarks = "";
           RejectedRemarks = "";
-          Currency = "";
+          Currency = currency;
           ApprovedRemarks = "";
           PaymentDisbursedRemarks = "";
           RepaymentRemarks = "";
@@ -292,7 +293,7 @@ actor FinanceCanister {
   public func EnableDefaultFinance(financeId : Text, action : Text, defaultRemarks : Text, txnHash : Text) : async Text {
     switch (map.get(financeId)) {
       case (?value) {
-        if (value.FinanceRequest == true and value.Approved == false and value.PaymentDisbursed == true and value.Repayment == false and value.Rejected == false and  Int.greater(Time.now(),value.FinanceDueDate) ) {
+        if (value.FinanceRequest == true and value.Approved == true and value.PaymentDisbursed == true and value.Repayment == false and value.Rejected == false and value.Default == false and  Int.greater(Time.now(),value.FinanceDueDate) ) {
           let updatedFinance = {
             value with
             TimeStamp = Time.now();
@@ -309,7 +310,7 @@ actor FinanceCanister {
             };
             case (null) {};
           };
-          return "Finance approved";
+          return "Finance request is defaulted due to pendding dues of Finance";
         } else {
           return Text.concat("Request failed, current invoice status = ", value.Action);
         };
@@ -355,7 +356,7 @@ actor FinanceCanister {
   public func DisableDefaultFinance(financeId : Text, action : Text, defaultRemarks : Text, txnHash : Text) : async Text {
     switch (map.get(financeId)) {
       case (?value) {
-        if (value.FinanceRequest == true and value.Approved == false and value.PaymentDisbursed == true and value.Repayment == true and value.Rejected == false  ) {
+        if (value.FinanceRequest == true and value.Approved == true and value.PaymentDisbursed == true and value.Repayment == true and value.Default == true and value.Rejected == false  ) {
           let updatedFinance = {
             value with
             TimeStamp = Time.now();
@@ -372,9 +373,9 @@ actor FinanceCanister {
             };
             case (null) {};
           };
-          return "Finance approved";
+          return "Finance defalt check is disabled all pending dues cleared!";
         } else {
-          return Text.concat("Request failed, current invoice status = ", value.Action);
+          return Text.concat(Text.concat("Request failed, current invoice status = ", value.Action), Text.concat(" and repayment staus = ", Bool.toText(value.Repayment)));
         };
       };
       case (null) {
@@ -386,7 +387,7 @@ actor FinanceCanister {
   public func ExtendFinanceDuedate(financeId : Text, action : Text, dueDate : Int, txnHash : Text) : async Text {
     switch (map.get(financeId)) {
       case (?value) {
-        if (Int.greater(Time.now(),dueDate)) {
+        if (Int.greater(Time.now(),dueDate) and  Int.greater(Time.now(),value.FinanceDueDate)) {
           let updatedFinance = {
             value with
             TimeStamp = Time.now();
