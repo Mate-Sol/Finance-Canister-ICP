@@ -91,7 +91,7 @@ actor FinanceCanister {
     processingfee : Text,
     creditlimit : Text,
     amount : Text,
-    currency:Text,
+    currency : Text,
     txnHash : Text,
   ) : async Text {
     switch (map.get(financeid)) {
@@ -230,10 +230,10 @@ actor FinanceCanister {
 
           let updatedFinance = {
             value with
-            Repayment=true;
-            RepaymentAmount=repaymentamount;
-            RepaymentRemarks=repaymentremarks;
-            FinanceCost=financecost;
+            Repayment = true;
+            RepaymentAmount = repaymentamount;
+            RepaymentRemarks = repaymentremarks;
+            FinanceCost = financecost;
             TimeStamp = Time.now();
             Action = action;
             RemainingAmount = Buffer.toArray<Remaining>(array);
@@ -265,7 +265,7 @@ actor FinanceCanister {
         if (value.FinanceRequest == true and value.Approved == false and value.PaymentDisbursed == false and value.Repayment == false and value.Rejected == false) {
           let updatedFinance = {
             value with
-            Rejected=true;
+            Rejected = true;
             RejectedRemarks = rejectremarks;
             TimeStamp = Time.now();
             Action = action;
@@ -293,7 +293,7 @@ actor FinanceCanister {
   public func EnableDefaultFinance(financeId : Text, action : Text, defaultRemarks : Text, txnHash : Text) : async Text {
     switch (map.get(financeId)) {
       case (?value) {
-        if (value.FinanceRequest == true and value.Approved == true and value.PaymentDisbursed == true and value.Repayment == false and value.Rejected == false and value.Default == false and  Int.greater(Time.now(),value.FinanceDueDate) ) {
+        if (value.FinanceRequest == true and value.Approved == true and value.PaymentDisbursed == true and value.Repayment == false and value.Rejected == false and value.Default == false and Int.greater(Time.now(), value.FinanceDueDate)) {
           let updatedFinance = {
             value with
             TimeStamp = Time.now();
@@ -356,7 +356,7 @@ actor FinanceCanister {
   public func DisableDefaultFinance(financeId : Text, action : Text, defaultRemarks : Text, txnHash : Text) : async Text {
     switch (map.get(financeId)) {
       case (?value) {
-        if (value.FinanceRequest == true and value.Approved == true and value.PaymentDisbursed == true and value.Repayment == true and value.Default == true and value.Rejected == false  ) {
+        if (value.FinanceRequest == true and value.Approved == true and value.PaymentDisbursed == true and value.Repayment == true and value.Default == true and value.Rejected == false) {
           let updatedFinance = {
             value with
             TimeStamp = Time.now();
@@ -387,7 +387,7 @@ actor FinanceCanister {
   public func ExtendFinanceDuedate(financeId : Text, action : Text, dueDate : Int, txnHash : Text) : async Text {
     switch (map.get(financeId)) {
       case (?value) {
-        if (Int.greater(Time.now(),dueDate) and  Int.greater(Time.now(),value.FinanceDueDate)) {
+        if (Int.greater(dueDate, value.FinanceDueDate)  and value.Rejected != true) {
           let updatedFinance = {
             value with
             TimeStamp = Time.now();
@@ -404,9 +404,15 @@ actor FinanceCanister {
             case (null) {};
           };
           return "Finance dueDate extended";
-        } else {
-          return "Request failed provided due date past away";
-        };
+        } else if (value.Rejected == true) {
+
+          return Text.concat("Request failed, current invoice status = ", value.Action);
+
+        } else  {
+
+          return "Request failed finance duedate not expired";
+
+        }
       };
       case (null) {
         return "Finance not found!";
@@ -420,10 +426,10 @@ actor FinanceCanister {
 
     return tempArray;
   };
-  
- public query func QueryInvoice(id : Text) : async ?Finance {
-        map.get(id);
-    };
+
+  public query func QueryInvoice(id : Text) : async ?Finance {
+    map.get(id);
+  };
 
   public query func GetInvoiceFinanceHistory(mongoId : Text) : async [Finance] {
     switch (history.get(mongoId)) {
