@@ -39,6 +39,7 @@ actor FinanceCanister {
     MobileNumber : Text;
     TimeStamp : Int;
     ProcessingFee : Text;
+    FinanceRate:Text;
     FinanceCost : Text;
     FinanceRequest : Bool;
     Rejected : Bool;
