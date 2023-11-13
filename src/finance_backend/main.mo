@@ -100,7 +100,7 @@ actor FinanceCanister {
         let array = Buffer.fromArray<Remaining>([]);
         array.add({ Amount = amount; Status = action });
         let finance : Finance = {
-          Type = "InvoiceFinance";
+          Type = "Finance";
           InvoiceId = invoiceId;
           MongoId = mongoid;
           FinanceId = financeid;
@@ -143,7 +143,7 @@ actor FinanceCanister {
         map.put(financeid, finance);
         var a = Buffer.Buffer<Finance>(0);
         a.add(finance);
-        history.put(mongoid, a);
+        history.put(financeid, a);
         return "Finance invoice created";
       };
 
