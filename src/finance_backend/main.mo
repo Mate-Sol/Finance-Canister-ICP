@@ -94,7 +94,6 @@ actor FinanceCanister {
     amount : Text,
     currency : Text,
     txnHash : Text,
-    Times:Int
   ) : async Text {
     switch (map.get(financeid)) {
       case (null) {
@@ -122,7 +121,7 @@ actor FinanceCanister {
           CreditLimit = "";
           Email = "";
           MobileNumber = "";
-          TimeStamp = Times;
+          TimeStamp = Time.now();
           ProcessingFee = processingfee;
           FinanceCost = "";
           FinanceRequest = true;
@@ -154,7 +153,7 @@ actor FinanceCanister {
     };
   };
 
-  public func ApproveFinance(financeId : Text, action : Text, financeRate : Text, approveAmount : Text, approveRemarks : Text, amount : Text, txnHash : Text, Times:Int) : async Text {
+  public func ApproveFinance(financeId : Text, action : Text, financeRate : Text, approveAmount : Text, approveRemarks : Text, amount : Text, txnHash : Text) : async Text {
     switch (map.get(financeId)) {
       case (?value) {
         if (value.FinanceRequest == true and value.Approved == false and value.PaymentDisbursed == false and value.Repayment == false and value.Rejected == false) {
@@ -164,7 +163,7 @@ actor FinanceCanister {
             Approved = true;
             ApproveAmount = approveAmount;
             FinanceRate = financeRate;
-            TimeStamp = Times;
+            TimeStamp = Time.now();
             Action = action;
             ApproveRemarks = approveRemarks;
             RemainingAmount = Buffer.toArray<Remaining>(array);
@@ -189,14 +188,14 @@ actor FinanceCanister {
     };
   };
 
-  public func DisburseFinance(financeId : Text, action : Text, disbursmentAmount : Text, disbursementRemarks : Text, amount : Text, dueDate : Int, txnHash : Text, Times:Int) : async Text {
+  public func DisburseFinance(financeId : Text, action : Text, disbursmentAmount : Text, disbursementRemarks : Text, amount : Text, dueDate : Int, txnHash : Text) : async Text {
     switch (map.get(financeId)) {
       case (?value) {
         if (value.FinanceRequest == true and value.Approved == true and value.PaymentDisbursed == false and value.Repayment == false and value.Rejected == false) {
           let array = Buffer.fromArray<Remaining>(value.RemainingAmount);
           let updatedFinance = {
             value with
-            TimeStamp = Times;
+            TimeStamp = Time.now();
             Action = action;
             PaymentDisbursed = true;
             FinanceDueDate = dueDate;
@@ -224,7 +223,7 @@ actor FinanceCanister {
     };
   };
 
-  public func RepaymentFinance(financeid : Text, action : Text, repaymentamount : Text, repaymentremarks : Text, financecost : Text, amount : Text, txnHash : Text, Times:Int) : async Text {
+  public func RepaymentFinance(financeid : Text, action : Text, repaymentamount : Text, repaymentremarks : Text, financecost : Text, amount : Text, txnHash : Text) : async Text {
     switch (map.get(financeid)) {
       case (?value) {
         if (value.FinanceRequest == true and value.Approved == true and value.PaymentDisbursed == true and value.Repayment == false and value.Rejected == false) {
@@ -236,7 +235,7 @@ actor FinanceCanister {
             RepaymentAmount = repaymentamount;
             RepaymentRemarks = repaymentremarks;
             FinanceCost = financecost;
-            TimeStamp = Times;
+            TimeStamp = Time.now();
             Action = action;
             RemainingAmount = Buffer.toArray<Remaining>(array);
 
@@ -261,7 +260,7 @@ actor FinanceCanister {
     };
   };
 
-  public func RejectFinance(financeId : Text, rejectremarks : Text, action : Text, txnHash : Text, Times:Int) : async Text {
+  public func RejectFinance(financeId : Text, rejectremarks : Text, action : Text, txnHash : Text) : async Text {
     switch (map.get(financeId)) {
       case (?value) {
         if (value.FinanceRequest == true and value.Approved == false and value.PaymentDisbursed == false and value.Repayment == false and value.Rejected == false) {
@@ -269,7 +268,7 @@ actor FinanceCanister {
             value with
             Rejected = true;
             RejectedRemarks = rejectremarks;
-            TimeStamp = Times;
+            TimeStamp = Time.now();
             Action = action;
             TxnHash = txnHash;
           };
@@ -292,13 +291,13 @@ actor FinanceCanister {
     };
   };
 
-  public func EnableDefaultFinance(financeId : Text, action : Text, defaultRemarks : Text, txnHash : Text, Times:Int) : async Text {
+  public func EnableDefaultFinance(financeId : Text, action : Text, defaultRemarks : Text, txnHash : Text) : async Text {
     switch (map.get(financeId)) {
       case (?value) {
         if (value.FinanceRequest == true and value.Approved == true and value.PaymentDisbursed == true and value.Repayment == false and value.Rejected == false and value.Default == false and Int.greater(Time.now(), value.FinanceDueDate)) {
           let updatedFinance = {
             value with
-            TimeStamp = Times;
+            TimeStamp = Time.now();
             Default = true;
             Action = action;
             DefaultRemarks = defaultRemarks;
@@ -355,13 +354,13 @@ actor FinanceCanister {
   //   };
   // };
 
-  public func DisableDefaultFinance(financeId : Text, action : Text, defaultRemarks : Text, txnHash : Text, Times:Int) : async Text {
+  public func DisableDefaultFinance(financeId : Text, action : Text, defaultRemarks : Text, txnHash : Text) : async Text {
     switch (map.get(financeId)) {
       case (?value) {
         if (value.FinanceRequest == true and value.Approved == true and value.PaymentDisbursed == true and value.Repayment == true and value.Default == true and value.Rejected == false) {
           let updatedFinance = {
             value with
-            TimeStamp = Times;
+            TimeStamp = Time.now();
             Action = action;
             Default = false;
             DefaultRemarks = defaultRemarks;
@@ -386,13 +385,13 @@ actor FinanceCanister {
     };
   };
 
-  public func ExtendFinanceDuedate(financeId : Text, action : Text, dueDate : Int, txnHash : Text, Times:Int) : async Text {
+  public func ExtendFinanceDuedate(financeId : Text, action : Text, dueDate : Int, txnHash : Text) : async Text {
     switch (map.get(financeId)) {
       case (?value) {
         if (Int.greater(dueDate, value.FinanceDueDate)  and value.Rejected != true) {
           let updatedFinance = {
             value with
-            TimeStamp = Times;
+            TimeStamp = Time.now();
             Action = action;
             FinanceDueDate = dueDate;
             TxnHash = txnHash;
