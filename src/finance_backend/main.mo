@@ -94,7 +94,7 @@ actor FinanceCanister {
     amount : Text,
     currency : Text,
     txnHash : Text,
-    Times:Int,
+    Times:Int
   ) : async Text {
     switch (map.get(financeid)) {
       case (null) {
@@ -159,6 +159,7 @@ actor FinanceCanister {
       case (?value) {
         if (value.FinanceRequest == true and value.Approved == false and value.PaymentDisbursed == false and value.Repayment == false and value.Rejected == false) {
           let array = Buffer.fromArray<Remaining>(value.RemainingAmount);
+        array.add({ Amount = amount; Status = action });
           let updatedFinance = {
             value with
             Approved = true;
@@ -194,6 +195,7 @@ actor FinanceCanister {
       case (?value) {
         if (value.FinanceRequest == true and value.Approved == true and value.PaymentDisbursed == false and value.Repayment == false and value.Rejected == false) {
           let array = Buffer.fromArray<Remaining>(value.RemainingAmount);
+                  array.add({ Amount = amount; Status = action });
           let updatedFinance = {
             value with
             TimeStamp = Times;
@@ -229,7 +231,7 @@ actor FinanceCanister {
       case (?value) {
         if (value.FinanceRequest == true and value.Approved == true and value.PaymentDisbursed == true and value.Repayment == false and value.Rejected == false) {
           let array = Buffer.fromArray<Remaining>(value.RemainingAmount);
-
+        array.add({ Amount = amount; Status = action });
           let updatedFinance = {
             value with
             Repayment = true;
