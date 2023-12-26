@@ -94,7 +94,7 @@ actor FinanceCanister {
     amount : Text,
     currency : Text,
     txnHash : Text,
-    Times:Int
+    Times:Int,
   ) : async Text {
     switch (map.get(financeid)) {
       case (null) {
@@ -119,9 +119,9 @@ actor FinanceCanister {
           RequestBy = requestedby;
           UserId = userid;
           FinanceDueDate = 0;
-          CreditLimit = "";
-          Email = "";
-          MobileNumber = "";
+          CreditLimit = creditlimit;
+          Email = email;
+          MobileNumber = mobileNo;
           TimeStamp = Times;
           ProcessingFee = processingfee;
           FinanceCost = "";
@@ -137,7 +137,7 @@ actor FinanceCanister {
           ApprovedRemarks = "";
           PaymentDisbursedRemarks = "";
           RepaymentRemarks = "";
-          FinancingScore = "";
+          FinancingScore = financescore;
           FinanceRate = "";
           TxnHash = txnHash;
         };
