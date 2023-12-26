@@ -163,7 +163,7 @@ actor FinanceCanister {
           let updatedFinance = {
             value with
             Approved = true;
-            ApproveAmount = approveAmount;
+            ApprovedAmount = approveAmount;
             FinanceRate = financeRate;
             TimeStamp = Times;
             Action = action;
@@ -202,7 +202,7 @@ actor FinanceCanister {
             Action = action;
             PaymentDisbursed = true;
             FinanceDueDate = dueDate;
-            DisbursmentAmount = disbursmentAmount;
+            DisbursedAmount = disbursmentAmount;
             PaymentDisbursedRemarks = disbursementRemarks;
             RemainingAmount = Buffer.toArray<Remaining>(array);
             TxnHash = txnHash;
