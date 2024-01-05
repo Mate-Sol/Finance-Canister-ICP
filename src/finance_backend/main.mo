@@ -325,37 +325,6 @@ actor FinanceCanister {
     };
   };
 
-  // public func FinanceDelete(financeId : Text, action : Text, financeRate : Text, approveAmount : Text, approveRemarks : Text, amount : Text, txnHash : Text) : async Text {
-  //   switch (map.get(financeId)) {
-  //     case (?value) {
-  //       if (value.FinanceRequest == false and value.Approved == false and value.PaymentDisbursed == false and value.Repayment == false and value.Rejected == false) {
-  //         let updatedFinance = {
-  //           value with
-  //           TimeStamp = Time.now();
-  //           Action = action;
-  //           FinanceRate = financeRate;
-  //           ApproveAmount = approveAmount;
-  //           ApproveRemarks = approveRemarks;
-  //           TxnHash = txnHash;
-  //         };
-  //         let updatedMap = map.put(financeId, updatedFinance);
-  //         switch (history.get(financeId)) {
-  //           case (?x) {
-  //             x.add(updatedFinance);
-  //             let res = history.put(financeId, x);
-  //           };
-  //           case (null) {};
-  //         };
-  //         return "Finance approved";
-  //       } else {
-  //         return Text.concat("Request failed, current invoice status = ", value.Action);
-  //       };
-  //     };
-  //     case (null) {
-  //       return "Finance not found!";
-  //     };
-  //   };
-  // };
 
   public func DisableDefaultFinance(financeId : Text, action : Text, defaultRemarks : Text, txnHash : Text,Times:Int) : async Text {
     switch (map.get(financeId)) {
